@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+    id("io.qameta.allure") version "3.2.0"
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.16.1'
+    implementation group: 'org.testng', name: 'testng', version: '7.5.1'
+
+    implementation 'net.datafaker:datafaker:2.5.2'
+
+    compileOnly 'org.projectlombok:lombok:1.18.28'
+    annotationProcessor 'org.projectlombok:lombok:1.18.28'
+    testImplementation 'org.projectlombok:lombok:1.18.28'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.28' //code authomatization
+
+    implementation 'ch.qos.logback:logback-classic:1.5.18'
+
+    implementation 'com.google.code.gson:gson:2.8.6' // JSON  ↔ Java-objects.
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0' //http-client for  Java и Android.
+
+    implementation 'io.rest-assured:rest-assured:4.5.1'
+    testImplementation 'io.qameta.allure:allure-testng:2.25.0' //allure for testng
+    testImplementation 'io.qameta.allure:allure-commandline:2.25.0'
+    testImplementation 'io.qameta.allure:allure-java-commons:2.25.0'
+    runtimeOnly("org.aspectj:aspectjweaver:1.9.25")
+    testImplementation 'io.qameta.allure:allure-assertj:2.25.0'
+
+}
+
+test {
+    useTestNG()
+
+}
