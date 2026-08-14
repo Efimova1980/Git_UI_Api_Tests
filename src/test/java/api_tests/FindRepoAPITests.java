@@ -1,13 +1,14 @@
 package api_tests;
 
-import dto.Item;
+import api_rest.GitHubApiClient;
 import dto.Items;
-import okhttp3.Request;
-import okhttp3.Response;
+import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import utils.BaseApi;
+import utils.SchemaValidator;
+import utils.TestData;
 
 import java.io.IOException;
 
@@ -15,26 +16,32 @@ public class FindRepoAPITests implements BaseApi {
 
     String repoName;
     SoftAssert softAssert = new SoftAssert();
+    GitHubApiClient gitHubApiClient = new GitHubApiClient();
+    Response response;
 
     @Test
-    public void findRepoPositiveTest(){
-        repoName = System.getProperty("repoName", "Efimova1980/QA_50_32");
-        Request request = new Request.Builder()
-                .url(BASE_URL + SEARCH_REPO + repoName)
-                .get()
-                .build();
+    public void findRepoPositiveTest() throws IOException {
 
-        try (Response response = OK_HTTP_CLIENT.newCall(request).execute()){
-            Items items = GSON.fromJson(response.body().string(), Items.class);
-            for (Item item: items.getItems()){
-                System.out.println(item.getFull_name() + ": is private="+ item.isPrivate());
-            }
-            softAssert.assertEquals(items.getTotal_count(), 1);
-            softAssert.assertFalse(items.getItems().get(0).isPrivate());
-            softAssert.assertAll();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        repoName = System.getProperty("repoName",
+                TestData.DEFAULT_REPO_NAME);
+
+        response = gitHubApiClient.searchRepositories(repoName);
+
+        Assert.assertNotNull(response.getBody());
+
+        Items items = response.as(Items.class);
+        String responseBody = response.getBody().asString();
+
+        softAssert.assertTrue(SchemaValidator.validateJsonSchema(responseBody,
+                        "src/test/resources/schema.json").isEmpty(),
+                "validate json schema");
+
+        softAssert.assertEquals(items.getTotal_count(), 1,
+                "validate that count of results is 1");
+
+        softAssert.assertFalse(items.getItems().get(0).isPrivate(),
+                "validate that the repo is public");
+
+        softAssert.assertAll();
     }
-
 }

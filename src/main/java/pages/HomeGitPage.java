@@ -12,21 +12,22 @@ public class HomeGitPage extends BasePage{
     public HomeGitPage(WebDriver driver) {
         setDriver(driver);
         driver.get("https://github.com/");
-        PageFactory.initElements(new AjaxElementLocatorFactory(driver, 10), this);
+        PageFactory.initElements(
+                new AjaxElementLocatorFactory(driver, 10), this);
     }
 
-    @FindBy(xpath = "//span[text()='Search or jump to...']")
+    @FindBy(xpath = "//span[text()='Search']")
     WebElement searchForm;
-    @FindBy(id="query-builder-test")
+    @FindBy(xpath = "//input[@placeholder='Search or jump to...']")
     WebElement inputSearch;
 
-    public void searchFormClick(){
+    public void openSearchForm(){
         clickWait(searchForm);
+        clickWait(inputSearch);
     }
 
-    public void typeInputSearch(String text){
+    public void typeTextToSearchForm(String text){
         inputSearch.sendKeys(text);
         inputSearch.sendKeys(Keys.ENTER);
     }
-
 }
